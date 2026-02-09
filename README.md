@@ -93,6 +93,47 @@ sqlpulse dump [flags]
 | `--no-foreign-keys` | Exclude foreign keys |
 | `--no-constraints` | Exclude check constraints |
 
+### `diff`
+
+Compare schemas between two SQL Server databases and show differences.
+
+```bash
+sqlpulse diff [flags]
+```
+
+**Examples:**
+```bash
+# Compare two databases on the same server
+sqlpulse diff --server localhost --database source_db --user sa --password secret \
+    --target-database target_db
+
+# Compare databases on different servers
+sqlpulse diff --server server1 --database db1 --user sa --password secret \
+    --target-server server2 --target-database db2 --target-user sa --target-password secret2
+
+# Generate migration script
+sqlpulse diff --server localhost --database dev_db --user sa --password secret \
+    --target-database prod_db --generate-migration --migration-file migration.sql
+```
+
+**Target Flags:**
+| Flag | Description |
+|------|-------------|
+| `--target-server` | Target SQL Server (defaults to source) |
+| `--target-database` | Target database name (required) |
+| `--target-user` | Target username (defaults to source) |
+| `--target-password` | Target password (defaults to source) |
+| `--target-trusted` | Use Windows auth for target |
+| `--target-port` | Target port (defaults to source) |
+
+**Output Flags:**
+| Flag | Description |
+|------|-------------|
+| `--format` | Output format: git, summary, or full (default: git) |
+| `--generate-migration` | Generate migration SQL script |
+| `--migration-file` | Output file for migration script |
+| `--ignore-collation` | Ignore collation differences |
+
 ## Global Flags
 
 | Flag | Short | Description |
@@ -137,6 +178,8 @@ SQLPulse/
 │   │   └── ports/
 │   │       ├── database.go      # Database port interface
 │   │       └── schema.go        # Schema extraction port
+│   ├── services/
+│   │   └── comparator.go        # Schema comparison service
 │   ├── adapters/
 │   │   └── sqlserver/
 │   │       ├── adapter.go       # SQL Server connection adapter
@@ -154,7 +197,7 @@ SQLPulse/
 |-------|---------|--------|
 | 1 | Cobra CLI + SQL Server connection | Done |
 | 2 | DDL extraction (`dump` command) | Done |
-| 3 | Schema comparison (`diff` command) | Planned |
+| 3 | Schema comparison (`diff` command) | Done |
 | 4 | Performance dashboard (Top Queries) | Planned |
 | 5 | Dry-run execution and improvements | Planned |
 | 6 | AI integration (Claude API) | Planned |
